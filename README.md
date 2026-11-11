@@ -38,8 +38,6 @@ mvn package
 java -jar target/grana-amiga-api-1.0.0.jar
 ```
 
-No Windows, `scripts/rodar-local.ps1 -Acao test` procura o JDK do IntelliJ e o Maven em cache quando não estão no PATH.
-
 ## Cadastro e acesso
 
 `POST /api/v1/auth/cadastro` recebe nome, telefone, senha e renda mensal opcional. O telefone é normalizado; a senha fica armazenada como hash. Contas criadas pela API recebem o papel `USER`. `POST /api/v1/auth/login` devolve um JWT válido por duas horas. Envie `Authorization: Bearer <token>` nas rotas protegidas.
@@ -153,7 +151,7 @@ Pendências para a entrega final:
 
 ## Uso de IA generativa
 
-ChatGPT/Codex foi utilizado nesta revisão para comparar o ZIP com os requisitos, executar verificações e organizar a importação no GitHub. O grupo deve revisar o código, compreender as regras implementadas e complementar esta declaração com outros usos de IA feitos durante o desenvolvimento.
+ChatGPT/Codex foi usado como apoio na revisão dos requisitos, na execução dos testes e na organização dos commits.
 
 ## Verificações realizadas em 11/11/2026
 
