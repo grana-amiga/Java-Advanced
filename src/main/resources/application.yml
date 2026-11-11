@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: grana-amiga-api
+  datasource:
+    url: jdbc:h2:file:./data/grana-amiga;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  cache:
+    type: caffeine
+    cache-names: categorias,resumoMensal
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=5m,recordStats
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Grana Amiga API
+    version: 1.0.0
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
