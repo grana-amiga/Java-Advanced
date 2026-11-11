@@ -1,0 +1,39 @@
+package br.com.citizentech.auth;
+
+import br.com.citizentech.domain.Papel;
+import br.com.citizentech.domain.Usuario;
+import br.com.citizentech.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+/** Cria um administrador somente quando o operador fornece credenciais por ambiente. */
+@Configuration
+public class AdminBootstrap {
+    @Bean
+    ApplicationRunner bootstrapAdmin(UsuarioRepository usuarios, PasswordEncoder encoder,
+            @Value("${APP_BOOTSTRAP_ADMIN_PHONE:}") String telefoneConfigurado,
+            @Value("${APP_BOOTSTRAP_ADMIN_PASSWORD:}") String senhaConfigurada) {
+        return args -> {
+            if (telefoneConfigurado.isBlank() && senhaConfigurada.isBlank()) return;
+            String telefone = telefoneConfigurado.replaceAll("\\D", "");
+            if (telefone.length() < 10 || telefone.length() > 13 || senhaConfigurada.length() < 8) {
+                throw new IllegalStateException("Configure APP_BOOTSTRAP_ADMIN_PHONE e APP_BOOTSTRAP_ADMIN_PASSWORD (mínimo 8 caracteres)");
+            }
+            if (usuarios.findByTelefone(telefone).isPresent()) {
+                if (usuarios.findByTelefone(telefone).orElseThrow().getPapel() != Papel.ADMIN) {
+                    throw new IllegalStateException("O telefone do administrador já pertence a um usuário comum");
+                }
+                return;
+            }
+            Usuario admin = new Usuario();
+            admin.setNome("Administrador");
+            admin.setTelefone(telefone);
+            admin.setSenhaHash(encoder.encode(senhaConfigurada));
+            admin.setPapel(Papel.ADMIN);
+            usuarios.save(admin);
+        };
+    }
+}
