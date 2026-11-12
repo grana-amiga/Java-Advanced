@@ -1,6 +1,7 @@
 package br.com.citizentech.security;
 
-import br.com.citizentech.domain.Usuario;
+import br.com.citizentech.model.Papel;
+import br.com.citizentech.model.Usuario;
 import br.com.citizentech.repository.UsuarioRepository;
 import java.util.Arrays;
 import java.util.List;

@@ -1,15 +1,16 @@
 package br.com.citizentech;
 
-import br.com.citizentech.domain.Categoria;
-import br.com.citizentech.domain.Papel;
-import br.com.citizentech.domain.TipoTransacao;
-import br.com.citizentech.domain.Usuario;
+import br.com.citizentech.model.Categoria;
+import br.com.citizentech.model.Papel;
+import br.com.citizentech.model.TipoTransacao;
+import br.com.citizentech.model.Usuario;
 import br.com.citizentech.repository.CategoriaRepository;
 import br.com.citizentech.repository.DispositivoRepository;
 import br.com.citizentech.repository.DividaRepository;
 import br.com.citizentech.repository.LeituraEnergiaRepository;
 import br.com.citizentech.repository.TransacaoRepository;
 import br.com.citizentech.repository.UsuarioRepository;
+
 import com.jayway.jsonpath.JsonPath;
 import java.math.BigDecimal;
 import java.util.List;

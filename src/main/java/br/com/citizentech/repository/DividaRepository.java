@@ -1,6 +1,6 @@
 package br.com.citizentech.repository;
 
-import br.com.citizentech.domain.Divida;
+import br.com.citizentech.model.Divida;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

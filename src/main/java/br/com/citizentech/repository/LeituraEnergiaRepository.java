@@ -1,6 +1,7 @@
 package br.com.citizentech.repository;
 
-import br.com.citizentech.domain.LeituraEnergia;
+import br.com.citizentech.model.Dispositivo;
+import br.com.citizentech.model.LeituraEnergia;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

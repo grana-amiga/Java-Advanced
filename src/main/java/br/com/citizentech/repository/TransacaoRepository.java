@@ -1,7 +1,7 @@
 package br.com.citizentech.repository;
 
-import br.com.citizentech.domain.TipoTransacao;
-import br.com.citizentech.domain.Transacao;
+import br.com.citizentech.model.TipoTransacao;
+import br.com.citizentech.model.Transacao;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

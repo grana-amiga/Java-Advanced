@@ -1,6 +1,6 @@
 package br.com.citizentech.repository;
 
-import br.com.citizentech.domain.Dispositivo;
+import br.com.citizentech.model.Dispositivo;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
