@@ -1,17 +1,25 @@
 package br.com.citizentech.service;
 
+import br.com.citizentech.model.AlertaVencimentoResponse;
+import br.com.citizentech.model.Divida;
 import br.com.citizentech.model.DividaRequest;
 import br.com.citizentech.model.DividaResponse;
+import br.com.citizentech.model.FaixaComprometimento;
 import br.com.citizentech.model.ParcelaPlanoResponse;
 import br.com.citizentech.model.PlanoQuitacaoResponse;
-import br.com.citizentech.model.Divida;
 import br.com.citizentech.model.StatusDivida;
+import br.com.citizentech.model.TermometroDividasResponse;
 import br.com.citizentech.model.Usuario;
 import br.com.citizentech.repository.DividaRepository;
 import br.com.citizentech.repository.UsuarioRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,10 +36,12 @@ public class DividaService {
 
     private final DividaRepository dividas;
     private final UsuarioRepository usuarios;
+    private final Clock clock;
 
-    public DividaService(DividaRepository dividas, UsuarioRepository usuarios) {
+    public DividaService(DividaRepository dividas, UsuarioRepository usuarios, Clock clock) {
         this.dividas = dividas;
         this.usuarios = usuarios;
+        this.clock = clock;
     }
 
     public List<DividaResponse> listar(Long usuarioId) {
@@ -66,6 +76,53 @@ public class DividaService {
     @Transactional
     public void excluir(Long usuarioId, Long id) {
         dividas.delete(buscarDoUsuario(usuarioId, id));
+    }
+
+    public TermometroDividasResponse termometro(Long usuarioId) {
+        Usuario usuario = usuarios.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não encontrado"));
+        BigDecimal totalParcelas = dividas.findByUsuarioId(usuarioId).stream()
+                .filter(divida -> divida.getStatus() == StatusDivida.ABERTA)
+                .map(Divida::getValorParcela)
+                .reduce(BigDecimal.ZERO.setScale(2), BigDecimal::add);
+        BigDecimal renda = usuario.getRendaMensal();
+        if (renda == null || renda.signum() == 0) {
+            return new TermometroDividasResponse(renda, totalParcelas, null,
+                    FaixaComprometimento.SEM_RENDA);
+        }
+        FaixaComprometimento faixa = totalParcelas.compareTo(renda.multiply(new BigDecimal("0.30"))) <= 0
+                ? FaixaComprometimento.VERDE
+                : totalParcelas.compareTo(renda.multiply(new BigDecimal("0.50"))) <= 0
+                        ? FaixaComprometimento.AMARELO : FaixaComprometimento.VERMELHO;
+        BigDecimal percentual = totalParcelas.multiply(CEM).divide(renda, 2, RoundingMode.HALF_UP);
+        return new TermometroDividasResponse(renda, totalParcelas, percentual, faixa);
+    }
+
+    public List<AlertaVencimentoResponse> alertas(Long usuarioId, LocalDate dataReferencia, int dias) {
+        if (dias < 0 || dias > 365) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dias deve estar entre 0 e 365");
+        }
+        LocalDate referencia = dataReferencia == null ? LocalDate.now(clock) : dataReferencia;
+        return dividas.findByUsuarioId(usuarioId).stream()
+                .filter(divida -> divida.getStatus() == StatusDivida.ABERTA)
+                .map(divida -> alerta(divida, referencia))
+                .filter(alerta -> alerta.diasRestantes() <= dias)
+                .sorted(Comparator.comparing(AlertaVencimentoResponse::dataVencimento)
+                        .thenComparing(AlertaVencimentoResponse::credor)
+                        .thenComparing(AlertaVencimentoResponse::dividaId))
+                .toList();
+    }
+
+    private AlertaVencimentoResponse alerta(Divida divida, LocalDate referencia) {
+        YearMonth mes = YearMonth.from(referencia);
+        LocalDate vencimento = mes.atDay(Math.min(divida.getDiaVencimento(), mes.lengthOfMonth()));
+        if (vencimento.isBefore(referencia)) {
+            mes = mes.plusMonths(1);
+            vencimento = mes.atDay(Math.min(divida.getDiaVencimento(), mes.lengthOfMonth()));
+        }
+        long diasRestantes = ChronoUnit.DAYS.between(referencia, vencimento);
+        return new AlertaVencimentoResponse(divida.getId(), divida.getCredor(),
+                divida.getValorParcela(), vencimento, diasRestantes, diasRestantes <= 7);
     }
 
     public PlanoQuitacaoResponse plano(Long usuarioId, Long id) {

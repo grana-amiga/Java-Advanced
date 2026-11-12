@@ -1,17 +1,21 @@
 package br.com.citizentech.controller;
 
+import br.com.citizentech.model.AlertaVencimentoResponse;
 import br.com.citizentech.model.DividaRequest;
 import br.com.citizentech.model.DividaResponse;
 import br.com.citizentech.model.PlanoQuitacaoResponse;
+import br.com.citizentech.model.TermometroDividasResponse;
 import br.com.citizentech.service.DividaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -41,6 +46,21 @@ public class DividaController {
     @Operation(summary = "Lista as dívidas da conta autenticada")
     public List<EntityModel<DividaResponse>> listar(@AuthenticationPrincipal Jwt jwt) {
         return service.listar(usuarioId(jwt)).stream().map(this::links).toList();
+    }
+
+    @GetMapping("/termometro")
+    @Operation(summary = "Calcula o comprometimento da renda com parcelas de dívidas abertas")
+    public TermometroDividasResponse termometro(@AuthenticationPrincipal Jwt jwt) {
+        return service.termometro(usuarioId(jwt));
+    }
+
+    @GetMapping("/alertas")
+    @Operation(summary = "Lista os próximos vencimentos de dívidas abertas")
+    public List<AlertaVencimentoResponse> alertas(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate dataReferencia,
+            @RequestParam(defaultValue = "15") int dias) {
+        return service.alertas(usuarioId(jwt), dataReferencia, dias);
     }
 
     @PostMapping
