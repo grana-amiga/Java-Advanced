@@ -17,7 +17,7 @@
     <description>API de educação financeira e gestão familiar da Global Solution 2026/2</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <springdoc.version>3.1.1</springdoc.version>
     </properties>
 
