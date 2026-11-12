@@ -12,12 +12,6 @@ spring:
     open-in-view: false
     properties:
       hibernate.jdbc.time_zone: UTC
-  cache:
-    type: caffeine
-    cache-names: categorias,resumoMensal
-    caffeine:
-      spec: maximumSize=1000,expireAfterWrite=5m,recordStats
-
 management:
   endpoints:
     web:
