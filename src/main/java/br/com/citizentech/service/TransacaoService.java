@@ -1,14 +1,13 @@
 package br.com.citizentech.service;
 
-import br.com.citizentech.model.ResumoMensalDto;
-import br.com.citizentech.model.TotalCategoriaDto;
-import br.com.citizentech.model.TransacaoDto;
-import br.com.citizentech.model.TransacaoForm;
-import br.com.citizentech.service.CategoriaService;
 import br.com.citizentech.model.Categoria;
 import br.com.citizentech.model.OrigemTransacao;
+import br.com.citizentech.model.ResumoMensalDto;
 import br.com.citizentech.model.TipoTransacao;
+import br.com.citizentech.model.TotalCategoriaDto;
 import br.com.citizentech.model.Transacao;
+import br.com.citizentech.model.TransacaoDto;
+import br.com.citizentech.model.TransacaoForm;
 import br.com.citizentech.repository.TransacaoRepository;
 import br.com.citizentech.repository.UsuarioRepository;
 import jakarta.persistence.criteria.Predicate;
@@ -16,7 +15,6 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,8 +104,8 @@ public class TransacaoService {
     public Page<TransacaoDto> extratoMensal(Long usuarioId, int ano, int mes, Pageable pageable) {
         YearMonth periodo = periodo(ano, mes);
         LocalDateTime inicio = periodo.atDay(1).atStartOfDay();
-        LocalDateTime fim = periodo.atEndOfMonth().atTime(LocalTime.MAX);
-        return repository.findByUsuarioIdAndDataTransacaoBetween(usuarioId, inicio, fim, pageable)
+        LocalDateTime fim = periodo.plusMonths(1).atDay(1).atStartOfDay();
+        return repository.findByUsuarioIdAndPeriodo(usuarioId, inicio, fim, pageable)
                 .map(TransacaoDto::from);
     }
 

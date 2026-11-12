@@ -479,14 +479,14 @@ class GranaAmigaApiIntegrationTest {
     }
 
     @Test
-    void extratoMensalIncluiPrimeiroEUltimoInstanteDoMes() throws Exception {
+    void extratoMensalUsaLimiteExclusivoNaViradaDoMes() throws Exception {
         Conta conta = cadastrar("Extrato Limites");
         Conta outra = cadastrar("Outro Extrato");
         Categoria categoria = novaCategoria(TipoTransacao.SAIDA);
-        criarTransacao(conta, categoria.getId(), "SAIDA", "10.00", "2026-10-31T23:59:59.999999");
+        long outubroId = id(criarTransacao(conta, categoria.getId(), "SAIDA", "10.00", "2026-10-31T23:59:59.999999"));
         long primeiro = id(criarTransacao(conta, categoria.getId(), "SAIDA", "11.00", "2026-11-01T00:00:00"));
         long ultimo = id(criarTransacao(conta, categoria.getId(), "SAIDA", "12.00", "2026-11-30T23:59:59.999999"));
-        criarTransacao(conta, categoria.getId(), "SAIDA", "13.00", "2026-12-01T00:00:00");
+        long dezembroId = id(criarTransacao(conta, categoria.getId(), "SAIDA", "13.00", "2026-12-01T00:00:00"));
         criarTransacao(outra, categoria.getId(), "SAIDA", "14.00", "2026-11-15T12:00:00");
 
         MvcResult resposta = mvc.perform(get("/api/v1/transacoes/extrato")
@@ -497,6 +497,20 @@ class GranaAmigaApiIntegrationTest {
         assertEquals(2, ((Number) JsonPath.read(json, "$.totalElementos")).intValue());
         assertEquals(ultimo, ((Number) JsonPath.read(json, "$.itens[0].id")).longValue());
         assertEquals(primeiro, ((Number) JsonPath.read(json, "$.itens[1].id")).longValue());
+
+        MvcResult outubro = mvc.perform(get("/api/v1/transacoes/extrato")
+                        .param("ano", "2026").param("mes", "10")
+                        .header("Authorization", bearer(conta)))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(1, ((Number) JsonPath.read(outubro.getResponse().getContentAsString(), "$.totalElementos")).intValue());
+        assertEquals(outubroId, ((Number) JsonPath.read(outubro.getResponse().getContentAsString(), "$.itens[0].id")).longValue());
+
+        MvcResult dezembro = mvc.perform(get("/api/v1/transacoes/extrato")
+                        .param("ano", "2026").param("mes", "12")
+                        .header("Authorization", bearer(conta)))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(1, ((Number) JsonPath.read(dezembro.getResponse().getContentAsString(), "$.totalElementos")).intValue());
+        assertEquals(dezembroId, ((Number) JsonPath.read(dezembro.getResponse().getContentAsString(), "$.itens[0].id")).longValue());
     }
 
     @Test

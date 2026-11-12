@@ -16,8 +16,17 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long>, Jpa
 
     boolean existsByCategoriaId(Long categoriaId);
 
-    Page<Transacao> findByUsuarioIdAndDataTransacaoBetween(
-            Long usuarioId, LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+    @Query("""
+            select t from Transacao t
+            where t.usuario.id = :usuarioId
+              and t.dataTransacao >= :inicio
+              and t.dataTransacao < :fim
+            """)
+    Page<Transacao> findByUsuarioIdAndPeriodo(
+            @Param("usuarioId") Long usuarioId,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim,
+            Pageable pageable);
 
     @Query("""
             select c.id, c.nome, sum(t.valor)
