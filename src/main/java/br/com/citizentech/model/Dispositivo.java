@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 
@@ -16,11 +17,13 @@ import java.math.BigDecimal;
 public class Dispositivo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_dispositivo")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dispositivo")
+    @SequenceGenerator(name = "seq_dispositivo", sequenceName = "seq_dispositivo", allocationSize = 1)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @Column(nullable = false, unique = true, length = 80)

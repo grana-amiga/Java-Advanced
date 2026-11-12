@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,15 +21,17 @@ import java.time.LocalDateTime;
 public class Transacao {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_transacao")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_transacao")
+    @SequenceGenerator(name = "seq_transacao", sequenceName = "seq_transacao", allocationSize = 1)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "categoria_id", nullable = false)
+    @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
 
     @Column(nullable = false, precision = 19, scale = 2)

@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,11 +19,13 @@ import java.time.LocalDateTime;
 public class LeituraEnergia {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_leitura")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_leitura")
+    @SequenceGenerator(name = "seq_leitura", sequenceName = "seq_leitura_energia", allocationSize = 1)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "dispositivo_id", nullable = false)
+    @JoinColumn(name = "id_dispositivo", nullable = false)
     private Dispositivo dispositivo;
 
     @Column(name = "dt_leitura", nullable = false)
