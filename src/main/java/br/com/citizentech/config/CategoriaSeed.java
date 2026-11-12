@@ -13,16 +13,16 @@ public class CategoriaSeed {
     ApplicationRunner categoriasIniciais(CategoriaRepository repository) {
         return args -> {
             if (repository.count() > 0) return;
-            salvar(repository, "Salário", "💰", TipoTransacao.ENTRADA);
-            salvar(repository, "Outras entradas", "➕", TipoTransacao.ENTRADA);
-            salvar(repository, "Alimentação", "🥖", TipoTransacao.SAIDA);
-            salvar(repository, "Mercado", "🛒", TipoTransacao.SAIDA);
-            salvar(repository, "Transporte", "🚌", TipoTransacao.SAIDA);
-            salvar(repository, "Moradia", "🏠", TipoTransacao.SAIDA);
-            salvar(repository, "Energia", "🔌", TipoTransacao.SAIDA);
-            salvar(repository, "Saúde", "💊", TipoTransacao.SAIDA);
-            salvar(repository, "Lazer", "🎮", TipoTransacao.SAIDA);
-            salvar(repository, "Outros gastos", "📦", TipoTransacao.SAIDA);
+            salvar(repository, "Salário", "attach_money", TipoTransacao.ENTRADA);
+            salvar(repository, "Outras entradas", "add_circle_outline", TipoTransacao.ENTRADA);
+            salvar(repository, "Alimentação", "restaurant", TipoTransacao.SAIDA);
+            salvar(repository, "Mercado", "shopping_cart", TipoTransacao.SAIDA);
+            salvar(repository, "Transporte", "directions_bus", TipoTransacao.SAIDA);
+            salvar(repository, "Moradia", "home", TipoTransacao.SAIDA);
+            salvar(repository, "Energia", "bolt", TipoTransacao.SAIDA);
+            salvar(repository, "Saúde", "medication", TipoTransacao.SAIDA);
+            salvar(repository, "Lazer", "sports_esports", TipoTransacao.SAIDA);
+            salvar(repository, "Outros gastos", "inventory_2", TipoTransacao.SAIDA);
         };
     }
 

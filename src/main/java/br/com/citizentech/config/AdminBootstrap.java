@@ -22,9 +22,15 @@ public class AdminBootstrap {
             if (telefone.length() < 10 || telefone.length() > 13 || senhaConfigurada.length() < 8) {
                 throw new IllegalStateException("Configure APP_BOOTSTRAP_ADMIN_PHONE e APP_BOOTSTRAP_ADMIN_PASSWORD (mínimo 8 caracteres)");
             }
-            if (usuarios.findByTelefone(telefone).isPresent()) {
-                if (usuarios.findByTelefone(telefone).orElseThrow().getPapel() != Papel.ADMIN) {
+            var existente = usuarios.findByTelefone(telefone);
+            if (existente.isPresent()) {
+                Usuario admin = existente.orElseThrow();
+                if (admin.getPapel() != Papel.ADMIN) {
                     throw new IllegalStateException("O telefone do administrador já pertence a um usuário comum");
+                }
+                if (admin.getSenhaHash().startsWith("HASH_DEMO_")) {
+                    admin.setSenhaHash(encoder.encode(senhaConfigurada));
+                    usuarios.save(admin);
                 }
                 return;
             }
