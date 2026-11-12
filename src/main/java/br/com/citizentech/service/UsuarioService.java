@@ -1,5 +1,6 @@
 package br.com.citizentech.service;
 
+import br.com.citizentech.model.UsuarioPerfilResponse;
 import br.com.citizentech.repository.DispositivoRepository;
 import br.com.citizentech.repository.DividaRepository;
 import br.com.citizentech.repository.LeituraEnergiaRepository;
@@ -27,6 +28,12 @@ public class UsuarioService {
         this.dispositivos = dispositivos;
         this.transacoes = transacoes;
         this.dividas = dividas;
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioPerfilResponse buscarMeuPerfil(Long usuarioId) {
+        return usuarios.findById(usuarioId).map(UsuarioPerfilResponse::from).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Conta não encontrada"));
     }
 
     @Transactional

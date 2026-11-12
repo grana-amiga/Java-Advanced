@@ -1,11 +1,13 @@
 package br.com.citizentech.controller;
 
+import br.com.citizentech.model.UsuarioPerfilResponse;
 import br.com.citizentech.service.UsuarioService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +20,11 @@ public class UsuarioController {
 
     public UsuarioController(UsuarioService service) {
         this.service = service;
+    }
+
+    @GetMapping("/me")
+    public UsuarioPerfilResponse meuPerfil(@AuthenticationPrincipal Jwt jwt) {
+        return service.buscarMeuPerfil(Long.valueOf(jwt.getSubject()));
     }
 
     @DeleteMapping("/me")
