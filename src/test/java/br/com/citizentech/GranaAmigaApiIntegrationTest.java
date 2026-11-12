@@ -10,7 +10,6 @@ import br.com.citizentech.repository.DividaRepository;
 import br.com.citizentech.repository.LeituraEnergiaRepository;
 import br.com.citizentech.repository.TransacaoRepository;
 import br.com.citizentech.repository.UsuarioRepository;
-
 import com.jayway.jsonpath.JsonPath;
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -123,6 +123,34 @@ class GranaAmigaApiIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(categoriaJson))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void actuatorSwaggerUiECorsRespeitamAcesso() throws Exception {
+        mvc.perform(get("/actuator/health")).andExpect(status().isOk());
+        mvc.perform(get("/actuator/info")).andExpect(status().isOk());
+        mvc.perform(get("/actuator/metrics")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/swagger-ui.html")).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/swagger-ui/index.html")).andExpect(status().isOk());
+
+        MvcResult preflight = mvc.perform(options("/api/v1/transacoes")
+                        .header("Origin", "http://localhost:3000")
+                        .header("Access-Control-Request-Method", "GET")
+                        .header("Access-Control-Request-Headers", "Authorization"))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("http://localhost:3000",
+                preflight.getResponse().getHeader("Access-Control-Allow-Origin"));
+
+        Conta conta = cadastrar("Actuator User");
+        mvc.perform(get("/actuator/metrics").header("Authorization", bearer(conta)))
+                .andExpect(status().isForbidden());
+        Usuario admin = usuarios.findById(conta.id()).orElseThrow();
+        admin.setPapel(Papel.ADMIN);
+        usuarios.saveAndFlush(admin);
+        String tokenAdmin = entrar(conta.telefone(), SENHA);
+        mvc.perform(get("/actuator/metrics")
+                        .header("Authorization", "Bearer " + tokenAdmin))
+                .andExpect(status().isOk());
     }
 
     @Test
