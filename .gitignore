@@ -8,3 +8,4 @@
 .env.*
 *.mv.db
 *.trace.db
+/scripts/rodar-local.ps1
