@@ -149,15 +149,16 @@ public class TransacaoService {
         if (categoria.getTipo() != form.tipo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo da categoria incompatível com a transação");
         }
+        LocalDateTime data = form.dataTransacao() != null ? form.dataTransacao()
+                : transacao.getDataTransacao() != null ? transacao.getDataTransacao() : LocalDateTime.now(clock);
+        if (data.getYear() < 2000 || data.getYear() > 2100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Datas devem estar entre 2000 e 2100");
+        }
         transacao.setCategoria(categoria);
         transacao.setValor(form.valor());
         transacao.setTipo(form.tipo());
         transacao.setDescricao(form.descricao() == null ? null : form.descricao().trim());
-        if (form.dataTransacao() != null) {
-            transacao.setDataTransacao(form.dataTransacao());
-        } else if (transacao.getDataTransacao() == null) {
-            transacao.setDataTransacao(LocalDateTime.now(clock));
-        }
+        transacao.setDataTransacao(data);
         transacao.setOrigem(origem);
     }
 
