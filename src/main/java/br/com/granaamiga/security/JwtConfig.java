@@ -23,7 +23,6 @@ public class JwtConfig {
     public SecretKey jwtSecretKey(@Value("${APP_JWT_SECRET:}") String configurado) {
         byte[] segredo;
         if (configurado == null || configurado.isBlank()) {
-            // Modo de demonstração: tokens anteriores deixam de valer a cada reinício.
             segredo = new byte[32];
             new SecureRandom().nextBytes(segredo);
         } else {

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/** Cria um administrador somente quando o operador fornece credenciais por ambiente. */
 @Configuration
 public class AdminBootstrap {
     @Bean
@@ -27,10 +26,6 @@ public class AdminBootstrap {
                 Usuario admin = existente.orElseThrow();
                 if (admin.getPapel() != Papel.ADMIN) {
                     throw new IllegalStateException("O telefone do administrador já pertence a um usuário comum");
-                }
-                if (admin.getSenhaHash().startsWith("HASH_DEMO_")) {
-                    admin.setSenhaHash(encoder.encode(senhaConfigurada));
-                    usuarios.save(admin);
                 }
                 return;
             }
