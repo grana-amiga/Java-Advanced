@@ -1,6 +1,6 @@
 package br.com.granaamiga.repository;
 
-import br.com.granaamiga.model.Divida;
+import br.com.granaamiga.model.divida.Divida;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

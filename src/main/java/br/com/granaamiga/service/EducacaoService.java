@@ -1,9 +1,9 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.SimulacaoJurosRequest;
-import br.com.granaamiga.model.SimulacaoJurosResponse;
-import br.com.granaamiga.model.SimulacaoPoupancaRequest;
-import br.com.granaamiga.model.SimulacaoPoupancaResponse;
+import br.com.granaamiga.model.educacao.SimulacaoJurosRequest;
+import br.com.granaamiga.model.educacao.SimulacaoJurosResponse;
+import br.com.granaamiga.model.educacao.SimulacaoPoupancaRequest;
+import br.com.granaamiga.model.educacao.SimulacaoPoupancaResponse;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;

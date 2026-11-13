@@ -1,7 +1,7 @@
 package br.com.granaamiga.config;
 
-import br.com.granaamiga.model.Papel;
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.usuario.Papel;
+import br.com.granaamiga.model.usuario.Usuario;
 import br.com.granaamiga.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;

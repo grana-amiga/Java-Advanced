@@ -1,6 +1,6 @@
 package br.com.granaamiga.repository;
 
-import br.com.granaamiga.model.Dispositivo;
+import br.com.granaamiga.model.energia.Dispositivo;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

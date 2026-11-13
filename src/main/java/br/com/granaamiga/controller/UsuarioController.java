@@ -1,8 +1,10 @@
 package br.com.granaamiga.controller;
 
-import br.com.granaamiga.model.UsuarioPerfilResponse;
+import br.com.granaamiga.model.usuario.UsuarioPerfilResponse;
 import br.com.granaamiga.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

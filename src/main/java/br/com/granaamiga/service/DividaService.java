@@ -1,15 +1,15 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.AlertaVencimentoResponse;
-import br.com.granaamiga.model.Divida;
-import br.com.granaamiga.model.DividaRequest;
-import br.com.granaamiga.model.DividaResponse;
-import br.com.granaamiga.model.FaixaComprometimento;
-import br.com.granaamiga.model.ParcelaPlanoResponse;
-import br.com.granaamiga.model.PlanoQuitacaoResponse;
-import br.com.granaamiga.model.StatusDivida;
-import br.com.granaamiga.model.TermometroDividasResponse;
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.divida.AlertaVencimentoResponse;
+import br.com.granaamiga.model.divida.Divida;
+import br.com.granaamiga.model.divida.DividaRequest;
+import br.com.granaamiga.model.divida.DividaResponse;
+import br.com.granaamiga.model.divida.FaixaComprometimento;
+import br.com.granaamiga.model.divida.ParcelaPlanoResponse;
+import br.com.granaamiga.model.divida.PlanoQuitacaoResponse;
+import br.com.granaamiga.model.divida.StatusDivida;
+import br.com.granaamiga.model.divida.TermometroDividasResponse;
+import br.com.granaamiga.model.usuario.Usuario;
 import br.com.granaamiga.repository.DividaRepository;
 import br.com.granaamiga.repository.UsuarioRepository;
 import java.math.BigDecimal;

@@ -1,7 +1,7 @@
 package br.com.granaamiga.repository;
 
-import br.com.granaamiga.model.TipoTransacao;
-import br.com.granaamiga.model.Transacao;
+import br.com.granaamiga.model.transacao.TipoTransacao;
+import br.com.granaamiga.model.transacao.Transacao;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

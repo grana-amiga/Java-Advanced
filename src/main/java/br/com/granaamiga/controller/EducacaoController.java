@@ -1,10 +1,12 @@
 package br.com.granaamiga.controller;
 
-import br.com.granaamiga.model.SimulacaoJurosRequest;
-import br.com.granaamiga.model.SimulacaoJurosResponse;
-import br.com.granaamiga.model.SimulacaoPoupancaRequest;
-import br.com.granaamiga.model.SimulacaoPoupancaResponse;
+import br.com.granaamiga.model.educacao.SimulacaoJurosRequest;
+import br.com.granaamiga.model.educacao.SimulacaoJurosResponse;
+import br.com.granaamiga.model.educacao.SimulacaoPoupancaRequest;
+import br.com.granaamiga.model.educacao.SimulacaoPoupancaResponse;
 import br.com.granaamiga.service.EducacaoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,7 +1,7 @@
 package br.com.granaamiga.config;
 
-import br.com.granaamiga.model.Categoria;
-import br.com.granaamiga.model.TipoTransacao;
+import br.com.granaamiga.model.categoria.Categoria;
+import br.com.granaamiga.model.transacao.TipoTransacao;
 import br.com.granaamiga.repository.CategoriaRepository;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;

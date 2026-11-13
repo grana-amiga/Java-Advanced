@@ -1,9 +1,9 @@
 package br.com.granaamiga;
 
-import br.com.granaamiga.model.Categoria;
-import br.com.granaamiga.model.Papel;
-import br.com.granaamiga.model.TipoTransacao;
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.categoria.Categoria;
+import br.com.granaamiga.model.usuario.Papel;
+import br.com.granaamiga.model.transacao.TipoTransacao;
+import br.com.granaamiga.model.usuario.Usuario;
 import br.com.granaamiga.repository.CategoriaRepository;
 import br.com.granaamiga.repository.DispositivoRepository;
 import br.com.granaamiga.repository.DividaRepository;
@@ -27,7 +27,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;

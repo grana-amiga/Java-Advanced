@@ -1,7 +1,7 @@
 package br.com.granaamiga.repository;
 
-import br.com.granaamiga.model.Categoria;
-import br.com.granaamiga.model.TipoTransacao;
+import br.com.granaamiga.model.categoria.Categoria;
+import br.com.granaamiga.model.transacao.TipoTransacao;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,6 @@
 package br.com.granaamiga.repository;
 
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.usuario.Usuario;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

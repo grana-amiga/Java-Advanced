@@ -1,11 +1,11 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.AuthResponse;
-import br.com.granaamiga.model.CadastroRequest;
-import br.com.granaamiga.model.LoginRequest;
-import br.com.granaamiga.model.UsuarioResumoResponse;
-import br.com.granaamiga.model.Papel;
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.usuario.AuthResponse;
+import br.com.granaamiga.model.usuario.CadastroRequest;
+import br.com.granaamiga.model.usuario.LoginRequest;
+import br.com.granaamiga.model.usuario.UsuarioResumoResponse;
+import br.com.granaamiga.model.usuario.Papel;
+import br.com.granaamiga.model.usuario.Usuario;
 import br.com.granaamiga.repository.UsuarioRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

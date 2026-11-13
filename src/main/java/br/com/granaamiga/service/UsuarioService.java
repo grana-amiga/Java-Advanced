@@ -1,6 +1,6 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.UsuarioPerfilResponse;
+import br.com.granaamiga.model.usuario.UsuarioPerfilResponse;
 import br.com.granaamiga.repository.DispositivoRepository;
 import br.com.granaamiga.repository.DividaRepository;
 import br.com.granaamiga.repository.LeituraEnergiaRepository;

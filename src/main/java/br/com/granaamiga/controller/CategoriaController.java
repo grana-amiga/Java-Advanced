@@ -1,16 +1,20 @@
 package br.com.granaamiga.controller;
 
-import br.com.granaamiga.model.CategoriaDto;
-import br.com.granaamiga.model.CategoriaForm;
+import br.com.granaamiga.model.categoria.CategoriaDto;
+import br.com.granaamiga.model.categoria.CategoriaForm;
+import br.com.granaamiga.model.transacao.TipoTransacao;
 import br.com.granaamiga.service.CategoriaService;
-import br.com.granaamiga.model.TipoTransacao;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

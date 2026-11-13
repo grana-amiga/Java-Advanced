@@ -1,7 +1,7 @@
 package br.com.granaamiga.security;
 
-import br.com.granaamiga.model.Papel;
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.usuario.Papel;
+import br.com.granaamiga.model.usuario.Usuario;
 import br.com.granaamiga.repository.UsuarioRepository;
 import java.util.Arrays;
 import java.util.List;

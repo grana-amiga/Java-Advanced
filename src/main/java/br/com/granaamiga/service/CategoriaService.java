@@ -1,9 +1,9 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.CategoriaDto;
-import br.com.granaamiga.model.CategoriaForm;
-import br.com.granaamiga.model.Categoria;
-import br.com.granaamiga.model.TipoTransacao;
+import br.com.granaamiga.model.categoria.CategoriaDto;
+import br.com.granaamiga.model.categoria.CategoriaForm;
+import br.com.granaamiga.model.categoria.Categoria;
+import br.com.granaamiga.model.transacao.TipoTransacao;
 import br.com.granaamiga.repository.CategoriaRepository;
 import br.com.granaamiga.repository.TransacaoRepository;
 import java.util.List;

@@ -1,7 +1,7 @@
 package br.com.granaamiga.repository;
 
-import br.com.granaamiga.model.Dispositivo;
-import br.com.granaamiga.model.LeituraEnergia;
+import br.com.granaamiga.model.energia.Dispositivo;
+import br.com.granaamiga.model.energia.LeituraEnergia;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

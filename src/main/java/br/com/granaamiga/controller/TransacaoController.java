@@ -1,13 +1,15 @@
 package br.com.granaamiga.controller;
 
-import br.com.granaamiga.model.PaginaDto;
-import br.com.granaamiga.model.ResumoMensalDto;
-import br.com.granaamiga.model.TransacaoDto;
-import br.com.granaamiga.model.TransacaoForm;
+import br.com.granaamiga.model.transacao.PaginaDto;
+import br.com.granaamiga.model.transacao.ResumoMensalDto;
+import br.com.granaamiga.model.transacao.TransacaoDto;
+import br.com.granaamiga.model.transacao.TransacaoForm;
+import br.com.granaamiga.model.transacao.OrigemTransacao;
+import br.com.granaamiga.model.transacao.TipoTransacao;
 import br.com.granaamiga.service.TransacaoService;
-import br.com.granaamiga.model.OrigemTransacao;
-import br.com.granaamiga.model.TipoTransacao;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.math.BigDecimal;

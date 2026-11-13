@@ -1,13 +1,13 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.Categoria;
-import br.com.granaamiga.model.OrigemTransacao;
-import br.com.granaamiga.model.ResumoMensalDto;
-import br.com.granaamiga.model.TipoTransacao;
-import br.com.granaamiga.model.TotalCategoriaDto;
-import br.com.granaamiga.model.Transacao;
-import br.com.granaamiga.model.TransacaoDto;
-import br.com.granaamiga.model.TransacaoForm;
+import br.com.granaamiga.model.categoria.Categoria;
+import br.com.granaamiga.model.transacao.OrigemTransacao;
+import br.com.granaamiga.model.transacao.ResumoMensalDto;
+import br.com.granaamiga.model.transacao.TipoTransacao;
+import br.com.granaamiga.model.transacao.TotalCategoriaDto;
+import br.com.granaamiga.model.transacao.Transacao;
+import br.com.granaamiga.model.transacao.TransacaoDto;
+import br.com.granaamiga.model.transacao.TransacaoForm;
 import br.com.granaamiga.repository.TransacaoRepository;
 import br.com.granaamiga.repository.UsuarioRepository;
 import jakarta.persistence.criteria.Predicate;

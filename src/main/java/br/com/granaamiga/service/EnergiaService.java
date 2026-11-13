@@ -1,14 +1,14 @@
 package br.com.granaamiga.service;
 
-import br.com.granaamiga.model.DispositivoDto;
-import br.com.granaamiga.model.DispositivoForm;
-import br.com.granaamiga.model.FaixaEnergia;
-import br.com.granaamiga.model.LeituraEnergiaDto;
-import br.com.granaamiga.model.LeituraEnergiaForm;
-import br.com.granaamiga.model.ResumoEnergiaDto;
-import br.com.granaamiga.model.Dispositivo;
-import br.com.granaamiga.model.LeituraEnergia;
-import br.com.granaamiga.model.Usuario;
+import br.com.granaamiga.model.energia.DispositivoDto;
+import br.com.granaamiga.model.energia.DispositivoForm;
+import br.com.granaamiga.model.energia.FaixaEnergia;
+import br.com.granaamiga.model.energia.LeituraEnergiaDto;
+import br.com.granaamiga.model.energia.LeituraEnergiaForm;
+import br.com.granaamiga.model.energia.ResumoEnergiaDto;
+import br.com.granaamiga.model.energia.Dispositivo;
+import br.com.granaamiga.model.energia.LeituraEnergia;
+import br.com.granaamiga.model.usuario.Usuario;
 import br.com.granaamiga.repository.DispositivoRepository;
 import br.com.granaamiga.repository.LeituraEnergiaRepository;
 import br.com.granaamiga.repository.UsuarioRepository;

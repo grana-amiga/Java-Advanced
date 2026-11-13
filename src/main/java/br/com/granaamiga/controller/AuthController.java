@@ -1,9 +1,11 @@
 package br.com.granaamiga.controller;
 
-import br.com.granaamiga.model.AuthResponse;
-import br.com.granaamiga.model.CadastroRequest;
-import br.com.granaamiga.model.LoginRequest;
+import br.com.granaamiga.model.usuario.AuthResponse;
+import br.com.granaamiga.model.usuario.CadastroRequest;
+import br.com.granaamiga.model.usuario.LoginRequest;
 import br.com.granaamiga.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
