@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CatalogoESimuladoresIntegrationTest {
 
     private static final String SENHA = "senha-de-teste-123";
+    private static final Set<String> METODOS_HTTP = Set.of("get", "post", "put", "patch", "delete");
 
     @Autowired private MockMvc mvc;
     @Autowired private UsuarioRepository usuarios;
@@ -59,6 +61,17 @@ class CatalogoESimuladoresIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
         assertEquals(nome, JsonPath.read(busca.getResponse().getContentAsString(), "$.nome"));
         assertEquals("SAIDA", JsonPath.read(busca.getResponse().getContentAsString(), "$.tipo"));
+        Map<?, ?> linksPublicos = JsonPath.read(busca.getResponse().getContentAsString(), "$._links");
+        assertFalse(linksPublicos.containsKey("atualizar"));
+        assertFalse(linksPublicos.containsKey("excluir"));
+
+        MvcResult buscaAdmin = mvc.perform(get("/api/v1/categorias/{id}", id)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("/api/v1/categorias/" + id,
+                JsonPath.read(buscaAdmin.getResponse().getContentAsString(), "$._links.atualizar.href"));
+        assertEquals("/api/v1/categorias/" + id,
+                JsonPath.read(buscaAdmin.getResponse().getContentAsString(), "$._links.excluir.href"));
 
         MvcResult lista = mvc.perform(get("/api/v1/categorias").param("tipo", "SAIDA"))
                 .andExpect(status().isOk()).andReturn();
@@ -108,6 +121,26 @@ class CatalogoESimuladoresIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"aporteMensal\":100.00,\"taxaMensal\":-1,\"meses\":3}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void openApiDescreveTodosOsEndpointsDaApi() throws Exception {
+        MvcResult resposta = mvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk()).andReturn();
+        Map<String, Object> caminhos = JsonPath.read(resposta.getResponse().getContentAsString(), "$.paths");
+        int documentados = 0;
+        for (var caminho : caminhos.entrySet()) {
+            if (!caminho.getKey().startsWith("/api/v1/")) continue;
+            Map<?, ?> operacoes = (Map<?, ?>) caminho.getValue();
+            for (var operacao : operacoes.entrySet()) {
+                if (!METODOS_HTTP.contains(operacao.getKey())) continue;
+                Map<?, ?> detalhes = (Map<?, ?>) operacao.getValue();
+                assertTrue(detalhes.get("summary") instanceof String resumo && !resumo.isBlank(),
+                        "Endpoint sem resumo no OpenAPI: " + caminho.getKey() + " " + operacao.getKey());
+                documentados++;
+            }
+        }
+        assertEquals(35, documentados);
     }
 
     private String tokenAdmin() throws Exception {

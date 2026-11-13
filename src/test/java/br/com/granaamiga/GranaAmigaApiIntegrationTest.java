@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -224,8 +225,13 @@ class GranaAmigaApiIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
         assertTrue(((List<?>) JsonPath.read(listaDividas.getResponse().getContentAsString(), "$")).isEmpty());
 
-        mvc.perform(get("/api/v1/transacoes/{id}", transacaoId).header("Authorization", bearer(ana)))
-                .andExpect(status().isOk());
+        MvcResult transacaoDona = mvc.perform(get("/api/v1/transacoes/{id}", transacaoId)
+                        .header("Authorization", bearer(ana)))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("/api/v1/transacoes/" + transacaoId,
+                JsonPath.read(transacaoDona.getResponse().getContentAsString(), "$._links.atualizar.href"));
+        assertEquals("/api/v1/transacoes/" + transacaoId,
+                JsonPath.read(transacaoDona.getResponse().getContentAsString(), "$._links.excluir.href"));
         mvc.perform(get("/api/v1/dividas/{id}", dividaId).header("Authorization", bearer(ana)))
                 .andExpect(status().isOk());
     }
@@ -315,6 +321,33 @@ class GranaAmigaApiIntegrationTest {
                         .header("Authorization", bearer(conta)))
                 .andExpect(status().isOk()).andReturn();
         assertDinheiro("0.00", JsonPath.read(novembro.getResponse().getContentAsString(), "$.saidas"));
+    }
+
+    @Test
+    void rejeitaTransacaoForaDosAnosConsultaveis() throws Exception {
+        Conta conta = cadastrar("Data Inválida");
+        Categoria categoria = novaCategoria(TipoTransacao.SAIDA);
+
+        mvc.perform(post("/api/v1/transacoes")
+                        .header("Authorization", bearer(conta))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(transacaoJson(categoria.getId(), "SAIDA", "20.00", "2101-01-01T10:00:00")))
+                .andExpect(status().isBadRequest());
+
+        long transacaoId = id(criarTransacao(conta, categoria.getId(), "SAIDA", "20.00",
+                "2026-11-05T10:00:00"));
+        mvc.perform(put("/api/v1/transacoes/{id}", transacaoId)
+                        .header("Authorization", bearer(conta))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(transacaoJson(categoria.getId(), "SAIDA", "99.00", "1999-12-31T10:00:00")))
+                .andExpect(status().isBadRequest());
+
+        MvcResult mantida = mvc.perform(get("/api/v1/transacoes/{id}", transacaoId)
+                        .header("Authorization", bearer(conta)))
+                .andExpect(status().isOk()).andReturn();
+        String json = mantida.getResponse().getContentAsString();
+        assertDinheiro("20.00", JsonPath.read(json, "$.valor"));
+        assertTrue(((String) JsonPath.read(json, "$.dataTransacao")).startsWith("2026-11-05T10:00"));
     }
 
     @Test
