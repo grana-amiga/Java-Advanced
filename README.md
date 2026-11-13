@@ -35,7 +35,7 @@ As seis entidades usam as tabelas e sequências correspondentes do Oracle. As as
 
 ## Como executar
 
-Configure `JAVA_HOME` com um JDK 25 ou superior e defina `DB_USERNAME` e `DB_PASSWORD` com os dados da sua conta Oracle. A conexão padrão usa `oracle.fiap.com.br:1521/orcl`; para outro servidor, defina também `DB_URL` com a URL JDBC completa. Na pasta do projeto, execute:
+Configure `JAVA_HOME` com um JDK 25 ou superior e defina `DB_USERNAME` e `DB_PASSWORD` com os dados de conexão fornecidos separadamente na entrega. A URL padrão do banco está em `application.yml`; para outro servidor, defina também `DB_URL` com a URL JDBC completa. Na pasta do projeto, execute:
 
 Windows:
 
@@ -51,33 +51,39 @@ sh mvnw spring-boot:run
 
 O Maven Wrapper usa a versão 3.9.16 do Maven e a baixa na primeira execução, se necessário.
 
-A API fica em `http://localhost:8080` e o [Swagger](http://localhost:8080/swagger-ui.html) mostra as operações disponíveis. O banco é o Oracle da FIAP; as tabelas do grupo devem existir no usuário configurado, pois a API apenas valida o esquema ao iniciar.
+A API fica em `http://localhost:8080`; abrir esse endereço redireciona para o [Swagger](http://localhost:8080/swagger-ui.html). O banco é o Oracle da FIAP; as tabelas do grupo devem existir no usuário configurado, pois a API apenas valida o esquema ao iniciar.
 
 Configure `APP_JWT_SECRET` com pelo menos 32 bytes para manter os tokens válidos entre reinícios. Para criar um `ADMIN`, defina `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` antes da primeira inicialização. Não há senha de administrador padrão.
 
 ## Publicação no Render
 
+A API está publicada em [https://grana-amiga-api.onrender.com](https://grana-amiga-api.onrender.com). A página inicial redireciona para o [Swagger](https://grana-amiga-api.onrender.com/swagger-ui/index.html). A saúde da aplicação pode ser consultada em [/actuator/health](https://grana-amiga-api.onrender.com/actuator/health).
+
+Para configurar o serviço em outra conta:
+
 Crie um **Web Service** conectado a este repositório e selecione **Docker**. O `Dockerfile` compila a API com Java 25. No painel **Environment**, configure `DB_USERNAME`, `DB_PASSWORD` e `APP_JWT_SECRET`; mantenha a senha do Oracle fora do Git. Use `DB_URL` apenas se o endereço do banco for diferente do padrão. Para Flutter Web, configure também `APP_CORS_ORIGINS` com a origem HTTPS do site; no aplicativo mobile nativo, CORS não é necessário.
 
-Defina **Health Check Path** como `/actuator/health`. A API usa a porta `PORT` fornecida pelo Render e continua na porta 8080 quando executada localmente. Depois do deploy, confira `https://<nome-do-servico>.onrender.com/actuator/health` e configure essa URL como base das chamadas do Flutter. O Oracle da FIAP permanece como banco; a conexão a partir do Render deve ser verificada após a publicação.
+Defina **Health Check Path** como `/actuator/health`. A API usa a porta `PORT` fornecida pelo Render e continua na porta 8080 quando executada localmente. Depois do deploy, confira `https://<nome-do-servico>.onrender.com/actuator/health`. No Flutter, use a URL raiz do serviço como base das chamadas, sem o caminho `/actuator/health`. O Oracle da FIAP permanece como banco. A conexão com ele foi verificada no deploy de 13/11/2026.
 
 ## Usuários de teste
 
-As contas fictícias abaixo já estão cadastradas no Oracle da FIAP, no esquema `RM567265`. Para usá-las, configure `DB_USERNAME=RM567265` e obtenha a senha do banco com o grupo. As senhas da tabela são apenas do aplicativo.
+As contas fictícias de demonstração estão cadastradas no Oracle da FIAP, no esquema do grupo. Os dados de conexão do banco e os logins de teste são fornecidos separadamente na entrega, em um TXT que não deve ser incluído no repositório nem neste ZIP.
 
-| Papel | Telefone | Senha do aplicativo | Demonstração |
-| --- | --- | --- | --- |
-| `USER` | `[TELEFONE_FORNECIDO_SEPARADAMENTE]` | `[CREDENCIAL_FORNECIDA_SEPARADAMENTE]` | Lançamentos, dívida, dispositivo e leitura de energia já cadastrados |
-| `ADMIN` | `[TELEFONE_FORNECIDO_SEPARADAMENTE]` | `[CREDENCIAL_FORNECIDA_SEPARADAMENTE]` | Manutenção de categorias e consulta de `/actuator/metrics` |
+| Papel | Demonstração |
+| --- | --- |
+| `USER` | Lançamentos, dívida, dispositivo e leitura de energia já cadastrados |
+| `ADMIN` | Manutenção de categorias e consulta de `/actuator/metrics` |
 
 Em outro esquema Oracle, crie um `USER` pelo cadastro e um `ADMIN` com as variáveis de bootstrap descritas acima. Essas contas de demonstração não são criadas automaticamente pelo projeto.
 
 ## Testar pelo Swagger
 
-1. Abra `POST /api/v1/auth/login`, selecione **Try it out** e entre com a conta `USER` da tabela. Copie o token retornado.
+Abra o [Swagger da API publicada](https://grana-amiga-api.onrender.com/swagger-ui/index.html) ou execute o projeto localmente.
+
+1. Abra `POST /api/v1/auth/login`, selecione **Try it out** e entre com a conta `USER` informada no TXT enviado com o link do GitHub. Copie o token retornado.
 2. Selecione **Authorize** no Swagger e informe o token. Consulte `GET /api/v1/transacoes`, `GET /api/v1/dividas` e `GET /api/v1/dispositivos` para ver os dados fictícios.
 3. Consulte `GET /api/v1/categorias` e escolha o ID de uma categoria do tipo `SAIDA`. Registre um gasto em `POST /api/v1/transacoes` e consulte `GET /api/v1/transacoes/resumo` com o ano e o mês atuais.
-4. Para conferir o perfil `ADMIN`, faça login com a outra conta e substitua o token em **Authorize**. Abra `GET /api/v1/categorias/{id}` e `GET /actuator/metrics`.
+4. Para conferir o perfil `ADMIN`, faça login com as credenciais do mesmo TXT e substitua o token em **Authorize**. Abra `GET /api/v1/categorias/{id}` e `GET /actuator/metrics`.
 
 O cadastro público cria somente `USER`. A renda mensal é uma referência para planejamento; ela só entra no saldo quando registrada como transação do tipo `ENTRADA`. Para mostrar HATEOAS, consulte uma transação e observe os links `self`, `categoria`, `atualizar` e `excluir`. Com `ADMIN`, uma categoria também mostra links de manutenção. O resumo mensal usa cache: depois de adicionar, editar ou excluir uma transação, a consulta seguinte reflete a alteração. `GET /actuator/health` mostra a saúde da API.
 

@@ -9,3 +9,8 @@
 *.mv.db
 *.trace.db
 /scripts/rodar-local.ps1
+
+# Dados enviados separadamente na entrega
+/entrega/
+credenciais*.txt
+dados-acesso*.txt
