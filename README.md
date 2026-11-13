@@ -55,6 +55,12 @@ A API fica em `http://localhost:8080` e o [Swagger](http://localhost:8080/swagge
 
 Configure `APP_JWT_SECRET` com pelo menos 32 bytes para manter os tokens válidos entre reinícios. Para criar um `ADMIN`, defina `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` antes da primeira inicialização. Não há senha de administrador padrão.
 
+## Publicação no Render
+
+Crie um **Web Service** conectado a este repositório e selecione **Docker**. O `Dockerfile` compila a API com Java 25. No painel **Environment**, configure `DB_USERNAME`, `DB_PASSWORD` e `APP_JWT_SECRET`; mantenha a senha do Oracle fora do Git. Use `DB_URL` apenas se o endereço do banco for diferente do padrão. Para Flutter Web, configure também `APP_CORS_ORIGINS` com a origem HTTPS do site; no aplicativo mobile nativo, CORS não é necessário.
+
+Defina **Health Check Path** como `/actuator/health`. A API usa a porta `PORT` fornecida pelo Render e continua na porta 8080 quando executada localmente. Depois do deploy, confira `https://<nome-do-servico>.onrender.com/actuator/health` e configure essa URL como base das chamadas do Flutter. O Oracle da FIAP permanece como banco; a conexão a partir do Render deve ser verificada após a publicação.
+
 ## Usuários de teste
 
 As contas fictícias abaixo já estão cadastradas no Oracle da FIAP, no esquema `RM567265`. Para usá-las, configure `DB_USERNAME=RM567265` e obtenha a senha do banco com o grupo. As senhas da tabela são apenas do aplicativo.

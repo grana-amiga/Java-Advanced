@@ -1,0 +1,13 @@
+target/
+data/
+scripts/
+.git/
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.env.*
+*.zip
+*.sql
+*.pdf
