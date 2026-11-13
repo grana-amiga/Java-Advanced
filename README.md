@@ -42,6 +42,8 @@ A API fica em `http://localhost:8080` e o [Swagger](http://localhost:8080/swagge
 
 Configure `APP_JWT_SECRET` com pelo menos 32 bytes para manter os tokens válidos entre reinícios. Para criar um `ADMIN`, defina `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` antes de iniciar. Se o telefone já pertencer ao administrador de exemplo com hash demonstrativo, a senha informada será gravada com BCrypt. Não há senha de administrador padrão.
 
+O emissor dos tokens JWT é `grana-amiga`. Após atualizar a API a partir da versão com emissor `citizentech`, faça login novamente para obter um token válido.
+
 ## Testar pelo Swagger
 
 1. Abra `POST /api/v1/auth/cadastro`, selecione **Try it out** e cadastre uma conta com o exemplo abaixo.

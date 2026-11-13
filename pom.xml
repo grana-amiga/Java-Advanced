@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>br.com.citizentech</groupId>
+    <groupId>br.com.granaamiga</groupId>
     <artifactId>grana-amiga-api</artifactId>
     <version>1.0.0</version>
     <name>Grana Amiga API</name>
