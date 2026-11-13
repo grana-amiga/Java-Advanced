@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/categorias")
+@Tag(name = "Categorias", description = "Catálogo público de categorias de entrada e saída")
 public class CategoriaController {
     private final CategoriaService service;
 
@@ -35,16 +36,19 @@ public class CategoriaController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar categorias", description = "Consulta categorias sem login, com filtro opcional por tipo.")
     public List<EntityModel<CategoriaDto>> listar(@RequestParam(required = false) TipoTransacao tipo) {
         return service.listar(tipo).stream().map(this::links).toList();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Consultar categoria", description = "Busca uma categoria pelo identificador sem exigir login.")
     public EntityModel<CategoriaDto> buscar(@PathVariable Long id) {
         return links(CategoriaDto.from(service.buscarEntidade(id)));
     }
 
     @PostMapping
+    @Operation(summary = "Criar categoria", description = "Adiciona uma categoria ao catálogo; exige papel ADMIN.")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<EntityModel<CategoriaDto>> criar(@Valid @RequestBody CategoriaForm form) {
         CategoriaDto dto = service.criar(form);
@@ -52,12 +56,14 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar categoria", description = "Altera nome e ícone de uma categoria; exige papel ADMIN.")
     @SecurityRequirement(name = "bearerAuth")
     public EntityModel<CategoriaDto> atualizar(@PathVariable Long id, @Valid @RequestBody CategoriaForm form) {
         return links(service.atualizar(id, form));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir categoria", description = "Remove uma categoria sem transações vinculadas; exige papel ADMIN.")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         service.excluir(id);
@@ -65,8 +71,20 @@ public class CategoriaController {
     }
 
     private EntityModel<CategoriaDto> links(CategoriaDto dto) {
-        return EntityModel.of(dto,
-                Link.of("/api/v1/categorias/" + dto.id()).withSelfRel(),
+        Link categoria = Link.of("/api/v1/categorias/" + dto.id());
+        EntityModel<CategoriaDto> recurso = EntityModel.of(dto,
+                categoria.withSelfRel(),
                 Link.of("/api/v1/categorias").withRel("categorias"));
+        if (administradorAutenticado()) {
+            recurso.add(categoria.withRel("atualizar").withTitle("PUT"),
+                    categoria.withRel("excluir").withTitle("DELETE"));
+        }
+        return recurso;
+    }
+
+    private boolean administradorAutenticado() {
+        Authentication autenticacao = SecurityContextHolder.getContext().getAuthentication();
+        return autenticacao != null && autenticacao.getAuthorities().stream()
+                .anyMatch(permissao -> "ROLE_ADMIN".equals(permissao.getAuthority()));
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/educacao")
+@Tag(name = "Educação financeira", description = "Simuladores públicos de juros e poupança")
 public class EducacaoController {
 
     private final EducacaoService educacaoService;
@@ -24,11 +25,13 @@ public class EducacaoController {
     }
 
     @PostMapping("/simuladores/juros")
+    @Operation(summary = "Simular juros compostos", description = "Calcula o montante e os juros a partir de capital, taxa mensal e prazo, sem salvar dados.")
     public SimulacaoJurosResponse simularJuros(@Valid @RequestBody SimulacaoJurosRequest request) {
         return educacaoService.simularJuros(request);
     }
 
     @PostMapping("/simuladores/poupanca")
+    @Operation(summary = "Simular poupança", description = "Projeta o saldo com rendimento mensal e aportes no fim de cada mês, sem salvar dados.")
     public SimulacaoPoupancaResponse simularPoupanca(@Valid @RequestBody SimulacaoPoupancaRequest request) {
         return educacaoService.simularPoupanca(request);
     }

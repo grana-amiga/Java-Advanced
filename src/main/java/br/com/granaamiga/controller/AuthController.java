@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Autenticação", description = "Cadastro e login por telefone e senha")
 public class AuthController {
 
     private final AuthenticationService authenticationService;
@@ -25,11 +26,13 @@ public class AuthController {
     }
 
     @PostMapping("/cadastro")
+    @Operation(summary = "Criar conta", description = "Cadastra um usuário comum e devolve um token de acesso.")
     public ResponseEntity<AuthResponse> cadastrar(@Valid @RequestBody CadastroRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.cadastrar(request));
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Entrar na conta", description = "Valida telefone e senha e devolve um token de acesso.")
     public AuthResponse entrar(@Valid @RequestBody LoginRequest request) {
         return authenticationService.entrar(request);
     }

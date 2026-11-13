@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Conta", description = "Perfil e exclusão da conta autenticada")
 public class UsuarioController {
 
     private final UsuarioService service;
@@ -25,11 +26,13 @@ public class UsuarioController {
     }
 
     @GetMapping("/me")
+    @Operation(summary = "Consultar meu perfil", description = "Retorna os dados da conta identificada pelo token.")
     public UsuarioPerfilResponse meuPerfil(@AuthenticationPrincipal Jwt jwt) {
         return service.buscarMeuPerfil(Long.valueOf(jwt.getSubject()));
     }
 
     @DeleteMapping("/me")
+    @Operation(summary = "Excluir minha conta", description = "Remove a conta autenticada e seus dados relacionados.")
     public ResponseEntity<Void> excluirMinhaConta(@AuthenticationPrincipal Jwt jwt) {
         service.excluirMinhaConta(Long.valueOf(jwt.getSubject()));
         return ResponseEntity.noContent().build();

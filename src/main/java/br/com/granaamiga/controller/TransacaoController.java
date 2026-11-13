@@ -38,6 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/v1/transacoes")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Transações", description = "Entradas, saídas, extrato e resumo financeiro da conta")
 public class TransacaoController {
     private final TransacaoService service;
 
@@ -46,6 +47,7 @@ public class TransacaoController {
     }
 
     @PostMapping
+    @Operation(summary = "Registrar transação", description = "Registra uma entrada ou saída da conta autenticada, com categoria do mesmo tipo.")
     public ResponseEntity<EntityModel<TransacaoDto>> criar(@AuthenticationPrincipal Jwt jwt,
                                                             @Valid @RequestBody TransacaoForm form) {
         TransacaoDto dto = service.criar(usuarioId(jwt), form, OrigemTransacao.APP);
@@ -53,23 +55,27 @@ public class TransacaoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Consultar transação", description = "Consulta uma transação pertencente à conta autenticada.")
     public EntityModel<TransacaoDto> buscar(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id) {
         return links(service.buscar(usuarioId(jwt), id));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar transação", description = "Altera uma transação pertencente à conta autenticada.")
     public EntityModel<TransacaoDto> atualizar(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id,
                                                @Valid @RequestBody TransacaoForm form) {
         return links(service.atualizar(usuarioId(jwt), id, form));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir transação", description = "Remove uma transação pertencente à conta autenticada.")
     public ResponseEntity<Void> excluir(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id) {
         service.excluir(usuarioId(jwt), id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
+    @Operation(summary = "Listar transações", description = "Lista as transações da conta autenticada com filtros, paginação e ordenação.")
     public PaginaDto<EntityModel<TransacaoDto>> listar(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false) TipoTransacao tipo,
@@ -89,6 +95,7 @@ public class TransacaoController {
     }
 
     @GetMapping("/extrato")
+    @Operation(summary = "Consultar extrato mensal", description = "Lista as transações da conta no mês informado, da mais recente para a mais antiga.")
     public PaginaDto<EntityModel<TransacaoDto>> extrato(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam int ano, @RequestParam int mes,
@@ -100,6 +107,7 @@ public class TransacaoController {
     }
 
     @GetMapping("/resumo")
+    @Operation(summary = "Consultar resumo mensal", description = "Soma entradas e saídas por categoria e calcula a diferença do mês; não consulta saldo bancário.")
     public ResumoMensalDto resumo(@AuthenticationPrincipal Jwt jwt,
                                   @RequestParam int ano, @RequestParam int mes) {
         return service.resumoMensal(usuarioId(jwt), ano, mes);
@@ -118,8 +126,11 @@ public class TransacaoController {
     }
 
     private EntityModel<TransacaoDto> links(TransacaoDto dto) {
+        Link transacao = Link.of("/api/v1/transacoes/" + dto.id());
         return EntityModel.of(dto,
-                Link.of("/api/v1/transacoes/" + dto.id()).withSelfRel(),
-                Link.of("/api/v1/categorias/" + dto.categoriaId()).withRel("categoria"));
+                transacao.withSelfRel(),
+                Link.of("/api/v1/categorias/" + dto.categoriaId()).withRel("categoria"),
+                transacao.withRel("atualizar").withTitle("PUT"),
+                transacao.withRel("excluir").withTitle("DELETE"));
     }
 }
