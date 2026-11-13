@@ -12,13 +12,26 @@ API de educação e organização financeira desenvolvida para a Global Solution
 | Matheus Peres Moraes de Jesus | 567300 |
 | Cassio Ribeiro | 567295 |
 
-Pitch: a incluir. Contas de demonstração (`USER` e `ADMIN`): a definir.
+Pitch: **adicionar o link do vídeo**.
 
 ## Tecnologias e organização
 
 Java 25, Spring Boot 4.1.1, Maven Wrapper, Spring Data JPA, Spring Security, Bean Validation, Oracle Database, Caffeine, HATEOAS, Actuator e Swagger/OpenAPI. Os testes automatizados usam H2 em memória.
 
-A aplicação segue o fluxo `controller → service → repository`. O pacote `model` reúne entidades e records de entrada e saída; `security` contém a configuração do JWT; `config` reúne as configurações e os dados iniciais; `exception` trata os erros da API. As senhas são armazenadas com BCrypt.
+A aplicação segue o fluxo `controller → service → repository`. O pacote `model` agrupa entidades e records por funcionalidade (`usuario`, `categoria`, `transacao`, `divida`, `energia` e `educacao`); `security` contém a configuração do JWT; `config` reúne as configurações e os dados iniciais; `exception` trata os erros da API. As senhas são armazenadas com BCrypt.
+
+## Modelo de dados
+
+```mermaid
+erDiagram
+    USUARIO ||--o{ TRANSACAO : registra
+    CATEGORIA ||--o{ TRANSACAO : classifica
+    USUARIO ||--o{ DIVIDA : possui
+    USUARIO ||--o{ DISPOSITIVO : cadastra
+    DISPOSITIVO ||--o{ LEITURA_ENERGIA : recebe
+```
+
+As seis entidades usam as tabelas e sequências correspondentes do Oracle. As associações são carregadas sob demanda (`LAZY`). Ao excluir uma conta, o serviço remove seus registros dependentes antes de excluir o usuário, sem exclusão em cascata automática.
 
 ## Como executar
 
@@ -38,30 +51,29 @@ sh mvnw spring-boot:run
 
 O Maven Wrapper usa a versão 3.9.16 do Maven e a baixa na primeira execução, se necessário.
 
-A API fica em `http://localhost:8080` e o [Swagger](http://localhost:8080/swagger-ui.html) mostra as operações disponíveis. A aplicação valida as tabelas existentes ao iniciar e não altera a estrutura do banco automaticamente.
+A API fica em `http://localhost:8080` e o [Swagger](http://localhost:8080/swagger-ui.html) mostra as operações disponíveis. O banco é o Oracle da FIAP; as tabelas do grupo devem existir no usuário configurado, pois a API apenas valida o esquema ao iniciar.
 
-Configure `APP_JWT_SECRET` com pelo menos 32 bytes para manter os tokens válidos entre reinícios. Para criar um `ADMIN`, defina `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` antes de iniciar. Se o telefone já pertencer ao administrador de exemplo com hash demonstrativo, a senha informada será gravada com BCrypt. Não há senha de administrador padrão.
+Configure `APP_JWT_SECRET` com pelo menos 32 bytes para manter os tokens válidos entre reinícios. Para criar um `ADMIN`, defina `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` antes da primeira inicialização. Não há senha de administrador padrão.
 
-O emissor dos tokens JWT é `grana-amiga`. Após atualizar a API a partir da versão com emissor `citizentech`, faça login novamente para obter um token válido.
+## Usuários de teste
+
+As contas fictícias abaixo já estão cadastradas no Oracle da FIAP, no esquema `RM567265`. Para usá-las, configure `DB_USERNAME=RM567265` e obtenha a senha do banco com o grupo. As senhas da tabela são apenas do aplicativo.
+
+| Papel | Telefone | Senha do aplicativo | Demonstração |
+| --- | --- | --- | --- |
+| `USER` | `[TELEFONE_FORNECIDO_SEPARADAMENTE]` | `[CREDENCIAL_FORNECIDA_SEPARADAMENTE]` | Lançamentos, dívida, dispositivo e leitura de energia já cadastrados |
+| `ADMIN` | `[TELEFONE_FORNECIDO_SEPARADAMENTE]` | `[CREDENCIAL_FORNECIDA_SEPARADAMENTE]` | Manutenção de categorias e consulta de `/actuator/metrics` |
+
+Em outro esquema Oracle, crie um `USER` pelo cadastro e um `ADMIN` com as variáveis de bootstrap descritas acima. Essas contas de demonstração não são criadas automaticamente pelo projeto.
 
 ## Testar pelo Swagger
 
-1. Abra `POST /api/v1/auth/cadastro`, selecione **Try it out** e cadastre uma conta com o exemplo abaixo.
-2. Faça `POST /api/v1/auth/login` com o mesmo telefone e senha. Copie o token retornado.
-3. Selecione **Authorize** no Swagger e informe o token.
-4. Consulte `GET /api/v1/categorias` e escolha o ID de uma categoria do tipo `SAIDA`.
-5. Registre um gasto em `POST /api/v1/transacoes` com esse ID e consulte `GET /api/v1/transacoes/resumo`.
+1. Abra `POST /api/v1/auth/login`, selecione **Try it out** e entre com a conta `USER` da tabela. Copie o token retornado.
+2. Selecione **Authorize** no Swagger e informe o token. Consulte `GET /api/v1/transacoes`, `GET /api/v1/dividas` e `GET /api/v1/dispositivos` para ver os dados fictícios.
+3. Consulte `GET /api/v1/categorias` e escolha o ID de uma categoria do tipo `SAIDA`. Registre um gasto em `POST /api/v1/transacoes` e consulte `GET /api/v1/transacoes/resumo` com o ano e o mês atuais.
+4. Para conferir o perfil `ADMIN`, faça login com a outra conta e substitua o token em **Authorize**. Abra `GET /api/v1/categorias/{id}` e `GET /actuator/metrics`.
 
-```json
-{
-  "nome": "Pessoa Teste",
-  "telefone": "11999990000",
-  "senha": "senha-de-teste-123",
-  "rendaMensal": 2000
-}
-```
-
-O cadastro cria um `USER`. A renda mensal é uma referência para planejamento; ela só entra no saldo quando registrada como transação do tipo `ENTRADA`. Caso o telefone do exemplo já esteja cadastrado, use outro número.
+O cadastro público cria somente `USER`. A renda mensal é uma referência para planejamento; ela só entra no saldo quando registrada como transação do tipo `ENTRADA`. Para mostrar HATEOAS, consulte uma transação e observe os links `self`, `categoria`, `atualizar` e `excluir`. Com `ADMIN`, uma categoria também mostra links de manutenção. O resumo mensal usa cache: depois de adicionar, editar ou excluir uma transação, a consulta seguinte reflete a alteração. `GET /actuator/health` mostra a saúde da API.
 
 ## Endpoints
 
@@ -95,9 +107,9 @@ O termômetro divide a soma das parcelas de dívidas abertas pela renda mensal: 
 
 ## Consultas e cache
 
-O extrato consulta lançamentos por usuário e período. O resumo usa JPQL para somar valores por categoria, e a listagem combina filtros de tipo, categoria, datas e valor com paginação.
+O extrato consulta lançamentos por usuário e período. Uma consulta derivada busca dívidas pelo usuário; o resumo usa JPQL para somar valores por categoria diretamente no banco. A listagem de lançamentos usa `Specification` para combinar filtros opcionais de tipo, categoria, datas e valor sem criar uma consulta para cada combinação, além de paginação e ordenação.
 
-O Caffeine guarda categorias e resumos mensais por até cinco minutos para reduzir consultas repetidas. A aplicação invalida as entradas afetadas quando esses dados mudam.
+O Caffeine guarda categorias, que mudam pouco, e resumos mensais, que podem ser consultados várias vezes, por até cinco minutos. `@Cacheable` evita repetir essas consultas; `@CacheEvict` invalida os dados quando uma categoria ou transação é alterada.
 
 ## Gerar o JAR
 
@@ -108,5 +120,3 @@ O arquivo gerado fica em `target/grana-amiga-api-1.0.0.jar` e pode ser executado
 ## Testes
 
 Execute `.\mvnw.cmd test` no Windows ou `sh mvnw test` no Linux/macOS. A suíte usa H2 em memória e não modifica o banco Oracle.
-
-Os testes com mocks usam o agente do Mockito configurado no Maven para executar com Java 25.
