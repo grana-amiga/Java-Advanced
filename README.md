@@ -78,11 +78,12 @@ Na execução local, o H2 cria as tabelas e sequências das seis entidades. No O
 
 ## Como executar
 
-Configure `JAVA_HOME` com um JDK 25 ou superior. O H2 em arquivo é o banco padrão; não é necessário configurar um banco externo.
+Instale o JDK 25, configure `JAVA_HOME` e abra o terminal na raiz do projeto (a pasta que contém `pom.xml` e `mvnw.cmd`). Confira se `java -version` mostra a versão 25. Sem perfil Spring ativo, a API usa H2 em arquivo e não precisa de banco externo.
 
 Windows / PowerShell:
 
 ```powershell
+Remove-Item Env:SPRING_PROFILES_ACTIVE -ErrorAction SilentlyContinue
 $env:APP_BOOTSTRAP_ADMIN_PHONE = "11000000002"
 $env:APP_BOOTSTRAP_ADMIN_PASSWORD = "DemoAdmin@GS2026"
 .\mvnw.cmd spring-boot:run
@@ -91,43 +92,57 @@ $env:APP_BOOTSTRAP_ADMIN_PASSWORD = "DemoAdmin@GS2026"
 Linux / macOS:
 
 ```bash
+unset SPRING_PROFILES_ACTIVE
 APP_BOOTSTRAP_ADMIN_PHONE=11000000002 APP_BOOTSTRAP_ADMIN_PASSWORD=DemoAdmin@GS2026 sh mvnw spring-boot:run
 ```
 
-O H2 cria as tabelas e grava os dados em `data/grana-amiga.mv.db`. Eles permanecem após reiniciar a API; a pasta `data` não vai para o Git. As categorias iniciais são cadastradas automaticamente. Os comandos acima também criam o `ADMIN` de teste quando ele ainda não existe.
+Na primeira execução, o Maven Wrapper baixa o Maven e as dependências, se necessário. Aguarde a mensagem `Started GranaAmigaApplication` e abra `http://localhost:8080/swagger-ui.html`. Pare a API com `Ctrl+C`.
+
+Se a política do Windows bloquear `mvnw.cmd`, instale o Maven 3.9.16 e execute `mvn spring-boot:run` no mesmo terminal, com as variáveis de ambiente definidas acima.
+
+O H2 cria as tabelas e grava os dados em `data/grana-amiga.mv.db`, dentro da pasta do projeto. Os dados permanecem após reiniciar a API; a pasta `data` não vai para o Git. As dez categorias iniciais são cadastradas automaticamente. Os comandos acima também criam o `ADMIN` de teste quando ele ainda não existe.
 
 O H2 local e o Oracle online são bancos separados: contas e lançamentos criados em um deles não aparecem automaticamente no outro.
 
-O Maven Wrapper usa a versão 3.9.16 do Maven e a baixa na primeira execução, se necessário. A API fica em `http://localhost:8080`; abrir esse endereço redireciona para o [Swagger](http://localhost:8080/swagger-ui.html).
-
-Configure `APP_JWT_SECRET` com pelo menos 32 bytes para manter os tokens válidos entre reinícios. Para criar um `ADMIN`, defina `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` antes da primeira inicialização. Não há senha de administrador padrão.
+O Maven Wrapper usa a versão 3.9.16 do Maven. O endereço `http://localhost:8080` redireciona para o Swagger. A variável `APP_JWT_SECRET` é opcional no computador; sem ela, os tokens deixam de valer após reiniciar a API e basta fazer login novamente. Para manter os tokens válidos entre reinícios, defina um segredo com pelo menos 32 bytes.
 
 ## Publicação no Render
 
-Crie um **Web Service** conectado a este repositório e selecione **Docker**. O `Dockerfile` compila a API com Java 25 e ativa o perfil `oracle`. No painel **Environment**, confirme `SPRING_PROFILES_ACTIVE=oracle` e configure `DB_URL` (URL JDBC completa), `DB_USERNAME`, `DB_PASSWORD` e `APP_JWT_SECRET`. Esses valores ficam somente no ambiente do Render; não os inclua no Git nem no TXT de submissão. Para Flutter Web, configure também `APP_CORS_ORIGINS` com a origem HTTPS do site; no aplicativo mobile nativo, CORS não é necessário.
+No serviço existente do Render, mantenha o tipo **Docker**. O `Dockerfile` compila a API com Java 25 e ativa o perfil `oracle`. **Antes do próximo deploy**, confirme `SPRING_PROFILES_ACTIVE=oracle` no painel **Environment** e configure `DB_URL` (URL JDBC completa), `DB_USERNAME`, `DB_PASSWORD` e `APP_JWT_SECRET` (pelo menos 32 bytes). A URL do banco não está no código; se `DB_URL` faltar, a API não inicia. Guarde os valores reais somente no ambiente do Render. Para Flutter Web, configure também `APP_CORS_ORIGINS` com a origem HTTPS do site; no aplicativo mobile nativo, CORS não é necessário.
 
-Defina **Health Check Path** como `/actuator/health`. A API usa a porta `PORT` fornecida pelo Render e continua na porta 8080 quando executada localmente. O esquema Oracle deve conter as tabelas e sequências da aplicação, pois ele é validado na inicialização. A instância publicada está em [grana-amiga-api.onrender.com](https://grana-amiga-api.onrender.com/), usada pelo Flutter como base das chamadas.
+Defina **Health Check Path** como `/actuator/health`. A API usa a porta `PORT` fornecida pelo Render e continua na porta 8080 quando executada localmente. O esquema Oracle deve conter as tabelas e sequências da aplicação, pois ele é validado na inicialização. A instância publicada está em [grana-amiga-api.onrender.com](https://grana-amiga-api.onrender.com/), endereço-base para as chamadas do Flutter.
 
 ## Usuários de teste
 
-As contas abaixo são fictícias e servem para demonstrar os dois papéis da API. As senhas são apenas do aplicativo.
+As contas abaixo são fictícias e servem para demonstrar os dois papéis da API. As senhas são apenas do aplicativo, não do banco de dados.
 
 | Papel | Telefone | Senha de teste | Demonstração |
 | --- | --- | --- | --- |
 | `USER` | `11000000001` | `DemoUser@GS2026` | Registrar lançamentos, dívidas, dispositivos e leituras de energia |
 | `ADMIN` | `11000000002` | `DemoAdmin@GS2026` | Manutenção de categorias e consulta de `/actuator/metrics` |
 
-No H2 local, os comandos de inicialização acima criam o `ADMIN`. Na primeira execução, cadastre o `USER` pelo Swagger em `POST /api/v1/auth/cadastro` com o telefone e a senha da tabela e um nome de sua escolha. Depois disso, as duas contas ficam salvas no arquivo H2. As contas fictícias já existem no Oracle usado pela instância publicada. O cadastro público cria somente `USER`. O TXT de submissão da disciplina contém somente o link do repositório GitHub; não inclua credenciais reais ou chaves.
+No H2 novo, os comandos de inicialização criam o `ADMIN`. Cadastre o `USER` uma vez pelo Swagger em `POST /api/v1/auth/cadastro` com este JSON:
+
+```json
+{
+  "nome": "Usuário de teste",
+  "telefone": "11000000001",
+  "senha": "DemoUser@GS2026",
+  "rendaMensal": 2000.00
+}
+```
+
+Nas próximas execuções, pule o cadastro e faça login: as contas continuam no arquivo H2. No Oracle da demonstração, use as contas da tabela se já estiverem cadastradas; em um esquema novo, cadastre o `USER` pelo mesmo endpoint e configure `APP_BOOTSTRAP_ADMIN_PHONE` e `APP_BOOTSTRAP_ADMIN_PASSWORD` no ambiente do Render para criar o `ADMIN` ao iniciar. O cadastro público cria somente `USER`.
 
 ## Testar pelo Swagger
 
-1. Na primeira execução local, abra `POST /api/v1/auth/cadastro`, selecione **Try it out** e cadastre o `USER` com os dados da tabela e um nome. Na API publicada, essa conta já existe.
+1. Em um H2 novo, cadastre o `USER` com o JSON acima. Se o telefone já estiver cadastrado, siga direto para o login.
 2. Abra `POST /api/v1/auth/login`, entre com a conta `USER` e copie o token retornado.
 3. Selecione **Authorize** no Swagger e informe o token. Consulte `GET /api/v1/transacoes`, `GET /api/v1/dividas` e `GET /api/v1/dispositivos`. No H2 local, as listas começam vazias.
 4. Consulte `GET /api/v1/categorias` e escolha o ID de uma categoria do tipo `SAIDA`. Registre um gasto em `POST /api/v1/transacoes` e consulte `GET /api/v1/transacoes/resumo` com o ano e o mês atuais.
-5. Para conferir o perfil `ADMIN`, faça login com a outra conta da tabela e substitua o token em **Authorize**. Abra `GET /api/v1/categorias/{id}` e `GET /actuator/metrics`.
+5. Faça login com a conta `ADMIN` e substitua o token em **Authorize**. Em `GET /api/v1/categorias/{id}`, o retorno passa a incluir links `atualizar` e `excluir`. Para testar uma operação restrita no Swagger, use `POST /api/v1/categorias` com um nome novo, um ícone e o tipo `SAIDA`.
 
-O cadastro público cria somente `USER`. A renda mensal é uma referência para planejamento; ela só entra no saldo quando registrada como transação do tipo `ENTRADA`. Para mostrar HATEOAS, consulte uma transação e observe os links `self`, `categoria`, `atualizar` e `excluir`. Com `ADMIN`, uma categoria também mostra links de manutenção. O resumo mensal usa cache: depois de adicionar, editar ou excluir uma transação, a consulta seguinte reflete a alteração. `GET /actuator/health` mostra a saúde da API.
+A renda mensal é uma referência para planejamento; ela só entra no saldo quando registrada como transação do tipo `ENTRADA`. Para mostrar HATEOAS, consulte uma transação e observe os links `self`, `categoria`, `atualizar` e `excluir`. O resumo mensal usa cache: depois de adicionar, editar ou excluir uma transação, a consulta seguinte reflete a alteração. `GET /actuator/health` mostra a saúde da API.
 
 ## Endpoints
 
@@ -180,3 +195,4 @@ O arquivo gerado fica em `target/grana-amiga-api-1.0.0.jar` e pode ser executado
 ## Testes
 
 Execute `.\mvnw.cmd test` no Windows ou `sh mvnw test` no Linux/macOS. A suíte usa H2 em memória e não modifica o H2 em arquivo nem o Oracle.
+
