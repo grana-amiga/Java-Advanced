@@ -11,5 +11,6 @@ FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 COPY --from=build /app/target/grana-amiga-api-1.0.0.jar app.jar
+ENV SPRING_PROFILES_ACTIVE=oracle
 EXPOSE 10000
 ENTRYPOINT ["java", "-jar", "app.jar"]
