@@ -12,7 +12,7 @@ API de educação e organização financeira desenvolvida para a Global Solution
 | Matheus Peres Moraes de Jesus | 567300 |
 | Cassio Ribeiro | 567295 |
 
-Pitch: **adicionar o link do vídeo**.
+Pitch: [assistir ao vídeo](https://youtu.be/-l8tAmSEWiE).
 
 ## Tecnologias e organização
 
@@ -184,7 +184,7 @@ O Caffeine guarda o catálogo de categorias, lido com frequência e alterado rar
 
 ## Uso de IA generativa
 
-ChatGPT e Codex foram utilizados como apoio na análise do enunciado, implementação, revisão de código, testes e documentação. Os resultados foram conferidos com o PDF da disciplina, a suíte automatizada e chamadas da API.
+Durante o desenvolvimento do projeto, o grupo utilizou o ChatGPT e o Codex como ferramentas de apoio na interpretação dos requisitos, na implementação e revisão da API, na organização do código e na elaboração da documentação. As sugestões foram analisadas e ajustadas ao contexto da solução, e o funcionamento da aplicação foi verificado em ambiente local e no Render, com acesso ao banco Oracle. O grupo revisou o conteúdo e é responsável pelas decisões técnicas e pela versão final do projeto.
 
 ## Gerar o JAR
 
